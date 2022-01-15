@@ -64,6 +64,8 @@ class ListFragment : Fragment() {
             )
                 .show()
             _binding.pbDog.visibility = View.GONE
+            mainViewModel.fetchResponseFromDb()
+            processLocalData()
         }
 
     }
@@ -75,7 +77,6 @@ class ListFragment : Fragment() {
                     response.data?.let {
                         totalPages = it.total_pages
                         loading = false;
-                        //  mainViewModel.saveResponseToDb(response.data)
                         showMovies(it)
                     }
                     _binding.pbDog.visibility = View.GONE
@@ -94,6 +95,16 @@ class ListFragment : Fragment() {
 
     }
 
+    private fun processLocalData() {
+        mainViewModel.responseDB.observe(viewLifecycleOwner) { response ->
+              response?.let {
+                  showMoviesFromDb(it)
+
+              }
+        }
+    }
+
+
     private fun showMovies(data: MoviesResponse) {
 
         for (item in data.results) {
@@ -101,30 +112,48 @@ class ListFragment : Fragment() {
                 list.add(item)
             }
         }
+        data.results = ArrayList()
+        data.results.addAll(list)
+        mainViewModel.saveMoviesResponseToDb(data)
         adapter.notifyDataSetChanged()
 
     }
 
-    private fun loadMore() {
-        _binding.list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (recyclerView != null) {
-                    super.onScrolled(recyclerView, dx, dy)
-                }
-
-
-                val visibleItemCount =
-                    (_binding.list.layoutManager as LinearLayoutManager).childCount
-                val totalItemCount = (_binding.list.layoutManager as LinearLayoutManager).itemCount
-                val firstVisible =
-                    (_binding.list.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-                if (!loading && (visibleItemCount + firstVisible) >= totalItemCount && page < totalPages && dy > 0) {
-                    loading = true
-                    page += 1
-                    fetchResponse(page)
-                }
+    private fun showMoviesFromDb(localData: MoviesResponse) {
+        for (item in localData.results) {
+            if (!list.contains(item)) {
+                list.add(item)
             }
-        })
-
+        }
+        adapter.notifyDataSetChanged()
     }
+
+    private fun loadMore() {
+
+        if (Utils.isNetworkAvailable(requireContext())) {
+            _binding.list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    if (recyclerView != null) {
+                        super.onScrolled(recyclerView, dx, dy)
+                    }
+
+
+                    val visibleItemCount =
+                        (_binding.list.layoutManager as LinearLayoutManager).childCount
+                    val totalItemCount =
+                        (_binding.list.layoutManager as LinearLayoutManager).itemCount
+                    val firstVisible =
+                        (_binding.list.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+                    if (!loading && (visibleItemCount + firstVisible) >= totalItemCount && page < totalPages && dy > 0) {
+                        loading = true
+                        page += 1
+                        fetchResponse(page)
+                    }
+                }
+            })
+
+        }
+    }
+
 }
+

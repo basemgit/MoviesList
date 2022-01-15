@@ -73,10 +73,12 @@ class DetailsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (img != "null") {
-            _binding.image.load(Constants.Poster_BASE_URL +img)
-        } else {
-            _binding.image.visibility = View.GONE
+        img?.let {
+            _binding.image.load(Constants.Poster_BASE_URL + it)
+            {
+                placeholder(R.drawable.ic_outline_360_24)
+                error(R.drawable.ic_outline_broken_image_24)
+            }
         }
         _binding.name.text = resources.getString(R.string.name) + " : " +title
         _binding.description.text = resources.getString(R.string.description) + " : " +description

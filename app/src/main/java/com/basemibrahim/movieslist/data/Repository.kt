@@ -1,5 +1,6 @@
 package com.basemibrahim.movieslist.data
 
+import com.basemibrahim.movieslist.data.local.LocalDataSource
 import com.basemibrahim.movieslist.data.model.api.BaseApiResponse
 import com.basemibrahim.movieslist.data.model.api.movie.MoviesResponse
 import com.basemibrahim.movieslist.data.model.api.reviews.ReviewsResponse
@@ -15,6 +16,8 @@ import javax.inject.Inject
 @ActivityRetainedScoped
 class Repository @Inject constructor(
     private val remoteDataSource: RemoteDataSource,
+    private val localDataSource: LocalDataSource
+
 ) : BaseApiResponse() {
 
     suspend fun getNowplayingMovies(page: Int): Flow<NetworkResult<MoviesResponse>> {
@@ -26,6 +29,17 @@ class Repository @Inject constructor(
     suspend fun getReviews(movieId: Int, page: Int): Flow<NetworkResult<ReviewsResponse>> {
         return flow<NetworkResult<ReviewsResponse>> {
             emit(safeApiCall { remoteDataSource.getReviews(movieId,page)})
+        }.flowOn(Dispatchers.IO)
+    }
+
+
+    suspend fun saveMoviesResponse(response: MoviesResponse) {
+        localDataSource.saveMoviesResponse(response)
+    }
+
+    suspend fun getResponseFromDb(): Flow<MoviesResponse> {
+        return flow<MoviesResponse> {
+            emit(localDataSource.getResponse())
         }.flowOn(Dispatchers.IO)
     }
 

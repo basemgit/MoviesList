@@ -27,6 +27,10 @@ class MainViewModel @Inject constructor
     private val _reviewsResponse: MutableLiveData<NetworkResult<ReviewsResponse>> = MutableLiveData()
     val reviewsResponse: LiveData<NetworkResult<ReviewsResponse>>  = _reviewsResponse
 
+
+    private val _responseDB: MutableLiveData<MoviesResponse> = MutableLiveData()
+    val responseDB: LiveData<MoviesResponse>  = _responseDB
+
     fun getNowPlayingMovies(page: Int) = viewModelScope.launch {
         repository.getNowplayingMovies(page).collect { values ->
             _response.value = values
@@ -40,6 +44,16 @@ class MainViewModel @Inject constructor
     }
 
 
+    fun saveMoviesResponseToDb(response: MoviesResponse) = viewModelScope.launch {
+        repository.saveMoviesResponse(response)
+    }
+
+
+    fun fetchResponseFromDb() = viewModelScope.launch {
+        repository.getResponseFromDb().collect { values ->
+            _responseDB.value = values
+        }
+    }
 
 
 
