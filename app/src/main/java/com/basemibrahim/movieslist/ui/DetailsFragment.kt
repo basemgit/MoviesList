@@ -10,50 +10,86 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.basemibrahim.movieslist.R
 import com.basemibrahim.movieslist.data.model.api.movie.MoviesResponse
 import com.basemibrahim.movieslist.data.model.api.movie.Result
-import com.basemibrahim.movieslist.databinding.ListFragmentBinding
-import com.basemibrahim.movieslist.utils.Constants.Companion.NETWORK_TAG
+import com.basemibrahim.movieslist.data.model.api.reviews.ResultX
+import com.basemibrahim.movieslist.data.model.api.reviews.ReviewsResponse
+import com.basemibrahim.movieslist.databinding.DetailsFragmentBinding
+import com.basemibrahim.movieslist.utils.Constants
+import com.basemibrahim.movieslist.utils.Constants.Companion.DESCRIPTION
+import com.basemibrahim.movieslist.utils.Constants.Companion.IMG
+import com.basemibrahim.movieslist.utils.Constants.Companion.MOVIE_ID
+import com.basemibrahim.movieslist.utils.Constants.Companion.POPULARITY
+import com.basemibrahim.movieslist.utils.Constants.Companion.RELEASE_DATE
+import com.basemibrahim.movieslist.utils.Constants.Companion.TITLE
+import com.basemibrahim.movieslist.utils.Constants.Companion.VOTES_AVERAGE
 import com.basemibrahim.movieslist.utils.NetworkResult
 import com.basemibrahim.movieslist.utils.Utils
 import com.basemibrahim.movieslist.viewmodel.MainViewModel
 import com.google.android.material.snackbar.Snackbar
-import dagger.hilt.android.AndroidEntryPoint
 
 
-@AndroidEntryPoint
-class ListFragment : Fragment() {
+class DetailsFragment : Fragment() {
     private val mainViewModel: MainViewModel by activityViewModels()
-    private lateinit var _binding: ListFragmentBinding
+    private lateinit var _binding: DetailsFragmentBinding
+    private lateinit var title: String
+    private lateinit var img: String
+    private lateinit var description: String
+    private lateinit var releaseDate: String
+    private lateinit var votesAverage: String
+    private lateinit var popularity: String
+    private var movieId = 0
+
     private var loading = true
     private var totalPages = 0
     var page = 1
-    private lateinit var adapter: MoviesAdapter
-    var list = ArrayList<Result>()
+    private lateinit var adapter: ReviewsAdapter
+    var list = ArrayList<ResultX>()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        arguments?.let {
+            title = it.getString(TITLE).toString()
+            img = it.getString(IMG).toString()
+            description = it.getString(DESCRIPTION).toString()
+            votesAverage = it.getString(VOTES_AVERAGE).toString()
+            releaseDate = it.getString(RELEASE_DATE).toString()
+            popularity = it.getString(POPULARITY).toString()
+             if(it.getInt(MOVIE_ID) > 0) movieId = it.getInt(MOVIE_ID)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = ListFragmentBinding.inflate(inflater)
-        _binding.lifecycleOwner = this
-        _binding.viewModel = mainViewModel
-        adapter = MoviesAdapter(list)
+        _binding = DetailsFragmentBinding.inflate(inflater, container, false)
+        adapter = ReviewsAdapter(list)
         _binding.list.adapter = adapter
         return _binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        fetchResponse(page)
+        if (img != "null") {
+            _binding.image.load(Constants.Poster_BASE_URL +img)
+        } else {
+            _binding.image.visibility = View.GONE
+        }
+        _binding.name.text = resources.getString(R.string.name) + " : " +title
+        _binding.description.text = resources.getString(R.string.description) + " : " +description
+        _binding.releaseDate.text = resources.getString(R.string.releaseDate) + " : " +releaseDate
+        _binding.popularity.text = resources.getString(R.string.popularity) + " : " +popularity
+        _binding.votesAverage.text = resources.getString(R.string.votesAverage) + " : " +votesAverage
+        fetchResponse(movieId,page)
         loadMore()
     }
 
-    private fun fetchResponse(page: Int) {
+    private fun fetchResponse(movieId: Int, page: Int) {
         if (Utils.isNetworkAvailable(requireContext())) {
-            mainViewModel.getNowPlayingMovies(page)
+            mainViewModel.getReviews(movieId, page)
             _binding.pbDog.visibility = View.VISIBLE
             processData()
         } else {
@@ -69,21 +105,24 @@ class ListFragment : Fragment() {
     }
 
     private fun processData() {
-        mainViewModel.response.observe(viewLifecycleOwner) { response ->
+        mainViewModel.reviewsResponse.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is NetworkResult.Success -> {
                     response.data?.let {
                         totalPages = it.total_pages
                         loading = false;
                         //  mainViewModel.saveResponseToDb(response.data)
-                        showMovies(it)
+                        if(it.results.isEmpty())_binding.noReviews.visibility = View.VISIBLE
+                        else _binding.noReviews.visibility = View.GONE
+                        list.clear()
+                        showReviews(it)
                     }
                     _binding.pbDog.visibility = View.GONE
                 }
 
                 is NetworkResult.Error -> {
                     _binding.pbDog.visibility = View.GONE
-                    Log.d(NETWORK_TAG, response.message.toString())
+                    Log.d(Constants.NETWORK_TAG, response.message.toString())
                 }
 
                 is NetworkResult.Loading -> {
@@ -94,8 +133,7 @@ class ListFragment : Fragment() {
 
     }
 
-    private fun showMovies(data: MoviesResponse) {
-
+    private fun showReviews(data: ReviewsResponse) {
         for (item in data.results) {
             if (!list.contains(item)) {
                 list.add(item)
@@ -121,10 +159,13 @@ class ListFragment : Fragment() {
                 if (!loading && (visibleItemCount + firstVisible) >= totalItemCount && page < totalPages && dy > 0) {
                     loading = true
                     page += 1
-                    fetchResponse(page)
+                    fetchResponse(page,movieId)
                 }
             }
         })
 
     }
+
+
+
 }

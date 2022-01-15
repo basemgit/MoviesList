@@ -22,5 +22,34 @@
     <fragment
         android:id="@+id/listFragment"
         android:name="com.basemibrahim.movieslist.ui.ListFragment"
-        android:label="Movies List" />
+        android:label="Movies List" >
+        <action
+            android:id="@+id/action_listFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailsFragment"
+        android:name="com.basemibrahim.movieslist.ui.DetailsFragment">
+        <argument
+            android:name="title"
+            app:argType="string" />
+        <argument
+            android:name="img"
+            app:argType="string" />
+        <argument
+            android:name="description"
+            app:argType="string" />
+        <argument
+            android:name="releaseDate"
+            app:argType="string" />
+        <argument
+            android:name="votesAverage"
+            app:argType="string" />
+        <argument
+            android:name="popularity"
+            app:argType="string" />
+        <argument
+            android:name="movieId"
+            app:argType="integer" />
+    </fragment>
 </navigation>

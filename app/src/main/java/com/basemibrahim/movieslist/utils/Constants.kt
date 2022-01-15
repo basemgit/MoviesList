@@ -6,10 +6,15 @@ class Constants {
         const val BASE_URL = "https://api.themoviedb.org/3/movie/"
         const val Poster_BASE_URL = "https://image.tmdb.org/t/p/w500"
         const val NOW_PLAYING_URL = "now_playing"
+        const val REVIEWS_URL = "{movie_id}/reviews"
         const val NETWORK_TAG = "NETWORK"
         const val TITLE = "title"
         const val IMG = "img"
-        const val BODY = "body"
+        const val DESCRIPTION = "description"
+        const val RELEASE_DATE = "releaseDate"
+        const val VOTES_AVERAGE = "votesAverage"
+        const val POPULARITY = "popularity"
+        const val MOVIE_ID = "movieId"
 
     }
 }

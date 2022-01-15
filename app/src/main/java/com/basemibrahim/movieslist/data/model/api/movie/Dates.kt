@@ -1,4 +1,4 @@
-package com.basemibrahim.movieslist.data.model.api
+package com.basemibrahim.movieslist.data.model.api.movie
 
 data class Dates(
     val maximum: String,

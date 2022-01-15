@@ -7,4 +7,7 @@ class RemoteDataSource @Inject constructor(private val retrofitService: Retrofit
     suspend fun getNowPlayingMovies(page: Int) =
         retrofitService.getNowPlayingMovies(page)
 
+    suspend fun getReviews(movieId: Int,page: Int) =
+        retrofitService.getReviews(movieId, page)
+
 }

@@ -6,7 +6,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.basemibrahim.movieslist.data.Repository
-import com.basemibrahim.movieslist.data.model.api.MoviesResponse
+import com.basemibrahim.movieslist.data.model.api.movie.MoviesResponse
+import com.basemibrahim.movieslist.data.model.api.reviews.ReviewsResponse
 import com.basemibrahim.movieslist.utils.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collect
@@ -23,9 +24,18 @@ class MainViewModel @Inject constructor
     private val _response: MutableLiveData<NetworkResult<MoviesResponse>> = MutableLiveData()
     val response: LiveData<NetworkResult<MoviesResponse>>  = _response
 
+    private val _reviewsResponse: MutableLiveData<NetworkResult<ReviewsResponse>> = MutableLiveData()
+    val reviewsResponse: LiveData<NetworkResult<ReviewsResponse>>  = _reviewsResponse
+
     fun getNowPlayingMovies(page: Int) = viewModelScope.launch {
         repository.getNowplayingMovies(page).collect { values ->
             _response.value = values
+        }
+    }
+
+    fun getReviews(movieId: Int, page: Int) = viewModelScope.launch {
+        repository.getReviews(movieId, page).collect { values ->
+            _reviewsResponse.value = values
         }
     }
 

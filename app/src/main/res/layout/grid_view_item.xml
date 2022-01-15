@@ -6,7 +6,7 @@
     <data>
         <variable
             name="item"
-            type="com.basemibrahim.movieslist.data.model.api.Result" />
+            type="com.basemibrahim.movieslist.data.model.api.movie.Result" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

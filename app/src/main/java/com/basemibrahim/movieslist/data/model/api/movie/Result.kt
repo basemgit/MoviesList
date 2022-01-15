@@ -1,4 +1,4 @@
-package com.basemibrahim.movieslist.data.model.api
+package com.basemibrahim.movieslist.data.model.api.movie
 
 import com.google.gson.annotations.SerializedName
 
@@ -15,6 +15,7 @@ data class Result(
     val release_date: String,
     val title: String,
     val video: Boolean,
+    @SerializedName("vote_average")
     val vote_average: Double,
     val vote_count: Int
 )
