@@ -17,5 +17,6 @@ data class Result(
     val video: Boolean,
     @SerializedName("vote_average")
     val vote_average: Double,
-    val vote_count: Int
+    val vote_count: Int,
+    var isFavourite: Boolean
 )

@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.basemibrahim.movieslist.R
@@ -23,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class ListFragment : Fragment() {
+class ListFragment : Fragment(), MoviesAdapter.OnFavClicked {
     private val mainViewModel: MainViewModel by activityViewModels()
     private lateinit var _binding: ListFragmentBinding
     private var loading = true
@@ -40,7 +39,7 @@ class ListFragment : Fragment() {
         _binding = ListFragmentBinding.inflate(inflater)
         _binding.lifecycleOwner = this
         _binding.viewModel = mainViewModel
-        adapter = MoviesAdapter(list)
+        adapter = MoviesAdapter(list, this)
         _binding.list.adapter = adapter
         return _binding.root
     }
@@ -97,16 +96,14 @@ class ListFragment : Fragment() {
 
     private fun processLocalData() {
         mainViewModel.responseDB.observe(viewLifecycleOwner) { response ->
-              response?.let {
-                  showMoviesFromDb(it)
-
-              }
+            response?.let {
+                showMoviesFromDb(it)
+            }
         }
     }
 
 
     private fun showMovies(data: MoviesResponse) {
-
         for (item in data.results) {
             if (!list.contains(item)) {
                 list.add(item)
@@ -125,6 +122,8 @@ class ListFragment : Fragment() {
                 list.add(item)
             }
         }
+        // again ... to save favourites offline
+        mainViewModel.saveMoviesResponseToDb(localData)
         adapter.notifyDataSetChanged()
     }
 
@@ -153,6 +152,11 @@ class ListFragment : Fragment() {
             })
 
         }
+    }
+
+    override fun saveFav() {
+        processData()
+        processLocalData()
     }
 
 }

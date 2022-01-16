@@ -8,7 +8,7 @@ import com.basemibrahim.movieslist.data.local.db.dao.MoviesDao
 import com.basemibrahim.movieslist.data.model.api.movie.MoviesResponse
 import com.basemibrahim.movieslist.utils.Converters
 
-@Database(entities = arrayOf(MoviesResponse::class), version = 1, exportSchema = false)
+@Database(entities = arrayOf(MoviesResponse::class), version = 2, exportSchema = false)
 @TypeConverters(Converters::class)
 
 abstract class AppDatabase : RoomDatabase() {

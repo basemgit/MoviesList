@@ -5,9 +5,9 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class MoviesResponse(
+    @PrimaryKey
     val dates: Dates,
     val page: Int,
-    @PrimaryKey
     var results: ArrayList<Result>,
     val total_pages: Int,
     val total_results: Int

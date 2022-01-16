@@ -12,7 +12,7 @@ import com.basemibrahim.movieslist.utils.Constants.Companion.Poster_BASE_URL
 @BindingAdapter("title")
 fun bindTitle(textView: TextView, title: String?) {
     title?.let {
-        textView.text = title + "                                                                  "
+        textView.text = title
     }
 }
 

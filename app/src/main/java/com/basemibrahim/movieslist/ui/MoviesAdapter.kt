@@ -1,16 +1,22 @@
 package com.basemibrahim.movieslist.ui
 
+import android.content.ClipData
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.basemibrahim.movieslist.R
 import com.basemibrahim.movieslist.data.model.api.movie.Result
 import com.basemibrahim.movieslist.databinding.GridViewItemBinding
 
 
-class MoviesAdapter(data: List<Result>) : RecyclerView.Adapter<
+class MoviesAdapter(data: List<Result>, internal var onFavClicked:OnFavClicked) : RecyclerView.Adapter<
         MoviesAdapter.MoviesViewHolder>() {
     var list: List<Result> = data
+
+    interface OnFavClicked {
+        fun saveFav()
+    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -32,14 +38,23 @@ class MoviesAdapter(data: List<Result>) : RecyclerView.Adapter<
         return list.size
     }
 
-    class MoviesViewHolder(
+   inner class MoviesViewHolder(
         private var binding:
         GridViewItemBinding
     ) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(movie: Result) {
             binding.item = movie
-            binding.root.setOnClickListener {
+            if(movie.isFavourite)
+            {
+                binding.favBtn.setBackgroundResource(R.drawable.ic_baseline_favorite_24)
+            }
+            else
+            {
+                binding.favBtn.setBackgroundResource(R.drawable.ic_baseline_favorite_border_24)
+
+            }
+            binding.image.setOnClickListener {
                 val action = ListFragmentDirections.actionListFragmentToDetailsFragment(
                     title = movie.title,
                     img = movie.poster_path,
@@ -50,7 +65,19 @@ class MoviesAdapter(data: List<Result>) : RecyclerView.Adapter<
                     movieId = movie.id
                 )
                 binding.root.findNavController().navigate(action)
-
+            }
+            binding.favBtn.setOnClickListener {
+                if(movie.isFavourite)
+                {
+                    it.setBackgroundResource(R.drawable.ic_baseline_favorite_border_24)
+                    movie.isFavourite = false
+                }
+                else
+                {
+                    it.setBackgroundResource(R.drawable.ic_baseline_favorite_24)
+                    movie.isFavourite = true
+                }
+                  onFavClicked.saveFav()
             }
             binding.executePendingBindings()
         }
