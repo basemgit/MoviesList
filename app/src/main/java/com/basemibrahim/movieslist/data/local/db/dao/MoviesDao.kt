@@ -12,4 +12,5 @@ interface MoviesDao {
 
     @Query("select * from moviesresponse")
     fun getResponse() : MoviesResponse
+
 }

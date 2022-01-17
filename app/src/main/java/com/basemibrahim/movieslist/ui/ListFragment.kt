@@ -2,9 +2,7 @@ package com.basemibrahim.movieslist.ui
 
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,7 +28,12 @@ class ListFragment : Fragment(), MoviesAdapter.OnFavClicked {
     var page = 1
     private lateinit var adapter: MoviesAdapter
     var list = ArrayList<Result>()
+    var favouritesList = ArrayList<Result>()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,7 +42,7 @@ class ListFragment : Fragment(), MoviesAdapter.OnFavClicked {
         _binding = ListFragmentBinding.inflate(inflater)
         _binding.lifecycleOwner = this
         _binding.viewModel = mainViewModel
-        adapter = MoviesAdapter(list, this)
+        adapter = MoviesAdapter(list, favouritesList, this)
         _binding.list.adapter = adapter
         return _binding.root
     }
@@ -50,7 +53,7 @@ class ListFragment : Fragment(), MoviesAdapter.OnFavClicked {
         loadMore()
     }
 
-    private fun fetchResponse(page: Int) {
+    fun fetchResponse(page: Int) {
         if (Utils.isNetworkAvailable(requireContext())) {
             mainViewModel.getNowPlayingMovies(page)
             _binding.pbDog.visibility = View.VISIBLE
@@ -66,7 +69,6 @@ class ListFragment : Fragment(), MoviesAdapter.OnFavClicked {
             mainViewModel.fetchResponseFromDb()
             processLocalData()
         }
-
     }
 
     private fun processData() {
@@ -91,7 +93,6 @@ class ListFragment : Fragment(), MoviesAdapter.OnFavClicked {
                 }
             }
         }
-
     }
 
     private fun processLocalData() {
@@ -102,13 +103,13 @@ class ListFragment : Fragment(), MoviesAdapter.OnFavClicked {
         }
     }
 
-
     private fun showMovies(data: MoviesResponse) {
         for (item in data.results) {
             if (!list.contains(item)) {
                 list.add(item)
             }
         }
+
         data.results = ArrayList()
         data.results.addAll(list)
         mainViewModel.saveMoviesResponseToDb(data)
@@ -122,12 +123,11 @@ class ListFragment : Fragment(), MoviesAdapter.OnFavClicked {
                 list.add(item)
             }
         }
-        // again ... to save favourites offline
-        mainViewModel.saveMoviesResponseToDb(localData)
+        Log.d("favlist size", favouritesList.size.toString())
         adapter.notifyDataSetChanged()
     }
 
-    private fun loadMore() {
+    fun loadMore() {
 
         if (Utils.isNetworkAvailable(requireContext())) {
             _binding.list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -155,9 +155,40 @@ class ListFragment : Fragment(), MoviesAdapter.OnFavClicked {
     }
 
     override fun saveFav() {
-        processData()
-        processLocalData()
+            processData()
     }
+
+
+
+    override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
+        menuInflater.inflate(R.menu.menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.all -> {
+                adapter.list = list
+                fetchResponse(1)
+                _binding.list.clearOnScrollListeners()
+                loadMore()
+                page = 1
+                _binding.list.scrollToPosition(0)
+                adapter.notifyDataSetChanged()
+                return true
+            }
+            R.id.fav -> {
+                _binding.list.clearOnScrollListeners()
+                adapter.list = favouritesList
+                _binding.list.scrollToPosition(0)
+                adapter.notifyDataSetChanged()
+                return true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+
+    }
+
 
 }
 

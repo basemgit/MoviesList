@@ -31,6 +31,7 @@ class MainViewModel @Inject constructor
     private val _responseDB: MutableLiveData<MoviesResponse> = MutableLiveData()
     val responseDB: LiveData<MoviesResponse>  = _responseDB
 
+
     fun getNowPlayingMovies(page: Int) = viewModelScope.launch {
         repository.getNowplayingMovies(page).collect { values ->
             _response.value = values
@@ -54,6 +55,7 @@ class MainViewModel @Inject constructor
             _responseDB.value = values
         }
     }
+
 
 
 

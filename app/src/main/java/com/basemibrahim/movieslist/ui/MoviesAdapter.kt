@@ -1,6 +1,5 @@
 package com.basemibrahim.movieslist.ui
 
-import android.content.ClipData
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.navigation.findNavController
@@ -10,9 +9,10 @@ import com.basemibrahim.movieslist.data.model.api.movie.Result
 import com.basemibrahim.movieslist.databinding.GridViewItemBinding
 
 
-class MoviesAdapter(data: List<Result>, internal var onFavClicked:OnFavClicked) : RecyclerView.Adapter<
+class MoviesAdapter(data: List<Result>,favList:ArrayList<Result>, internal var onFavClicked:OnFavClicked) : RecyclerView.Adapter<
         MoviesAdapter.MoviesViewHolder>() {
     var list: List<Result> = data
+    var favouritesList = favList
 
     interface OnFavClicked {
         fun saveFav()
@@ -71,11 +71,21 @@ class MoviesAdapter(data: List<Result>, internal var onFavClicked:OnFavClicked) 
                 {
                     it.setBackgroundResource(R.drawable.ic_baseline_favorite_border_24)
                     movie.isFavourite = false
+                    if(favouritesList.contains(movie))
+                    {
+                        favouritesList.remove(movie)
+
+                    }
                 }
                 else
                 {
                     it.setBackgroundResource(R.drawable.ic_baseline_favorite_24)
                     movie.isFavourite = true
+                    if(!favouritesList.contains(movie))
+                    {
+                        favouritesList.add(movie)
+
+                    }
                 }
                   onFavClicked.saveFav()
             }
