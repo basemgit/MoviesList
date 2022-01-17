@@ -13,4 +13,9 @@
         android:id="@+id/fav"
         android:title="@string/fav"
        />
+    <item
+        android:id="@+id/refresh"
+        android:icon="@drawable/ic_baseline_refresh_24"
+        app:showAsAction="always"
+        android:title="" />
 </menu>

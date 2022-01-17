@@ -166,7 +166,7 @@ class ListFragment : Fragment(), MoviesAdapter.OnFavClicked {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.all -> {
+            R.id.all,R.id.refresh -> {
                 adapter.list = list
                 fetchResponse(1)
                 _binding.list.clearOnScrollListeners()
