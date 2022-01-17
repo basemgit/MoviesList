@@ -22,6 +22,33 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/favBtn"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:adjustViewBounds="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:scaleType="fitXY"
+                    app:srcCompat="@drawable/ic_baseline_favorite_border_24" />
+
+                <RatingBar
+                    android:id="@+id/ratingBar"
+                    style="@style/Widget.AppCompat.RatingBar.Indicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:isIndicator="false"
+                    android:numStars="5"
+                    android:stepSize="1"
+                    app:layout_constraintBottom_toBottomOf="@+id/favBtn"
+
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/favBtn" />
+
 
                 <ImageView
                     android:id="@+id/image"
@@ -31,8 +58,10 @@
                     android:scaleType="fitXY"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:src="@tools:sample/backgrounds/scenic" />
+                    app:layout_constraintTop_toBottomOf="@id/ratingBar"
+                    tools:src="@tools:sample/backgrounds/scenic"
+                    android:layout_marginTop="10dp"
+                    />
 
                 <TextView
                     android:id="@+id/name"

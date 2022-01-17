@@ -51,5 +51,8 @@
         <argument
             android:name="movieId"
             app:argType="integer" />
+        <argument
+            android:name="isFavourite"
+            app:argType="boolean" />
     </fragment>
 </navigation>

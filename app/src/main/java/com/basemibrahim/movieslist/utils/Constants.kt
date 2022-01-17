@@ -15,6 +15,7 @@ class Constants {
         const val VOTES_AVERAGE = "votesAverage"
         const val POPULARITY = "popularity"
         const val MOVIE_ID = "movieId"
+        const val Is_FAVOURITE = "isFavourite"
 
     }
 }

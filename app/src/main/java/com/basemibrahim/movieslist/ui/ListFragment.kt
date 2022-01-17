@@ -29,7 +29,7 @@ class ListFragment : Fragment(), MoviesAdapter.OnFavClicked {
     private lateinit var adapter: MoviesAdapter
     var list = ArrayList<Result>()
     var favouritesList = ArrayList<Result>()
-
+    private lateinit var detailsFragment: DetailsFragment
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -109,7 +109,7 @@ class ListFragment : Fragment(), MoviesAdapter.OnFavClicked {
                 list.add(item)
             }
         }
-
+     //    list[0].isFavourite = true
         data.results = ArrayList()
         data.results.addAll(list)
         mainViewModel.saveMoviesResponseToDb(data)

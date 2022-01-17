@@ -62,7 +62,8 @@ class MoviesAdapter(data: List<Result>,favList:ArrayList<Result>, internal var o
                     releaseDate = movie.release_date,
                     votesAverage = movie.vote_average.toString(),
                     popularity = movie.popularity.toString(),
-                    movieId = movie.id
+                    movieId = movie.id,
+                    isFavourite = movie.isFavourite
                 )
                 binding.root.findNavController().navigate(action)
             }

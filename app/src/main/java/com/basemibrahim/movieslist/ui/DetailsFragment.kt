@@ -7,19 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.basemibrahim.movieslist.R
-import com.basemibrahim.movieslist.data.model.api.movie.MoviesResponse
-import com.basemibrahim.movieslist.data.model.api.movie.Result
 import com.basemibrahim.movieslist.data.model.api.reviews.ResultX
 import com.basemibrahim.movieslist.data.model.api.reviews.ReviewsResponse
 import com.basemibrahim.movieslist.databinding.DetailsFragmentBinding
 import com.basemibrahim.movieslist.utils.Constants
 import com.basemibrahim.movieslist.utils.Constants.Companion.DESCRIPTION
 import com.basemibrahim.movieslist.utils.Constants.Companion.IMG
+import com.basemibrahim.movieslist.utils.Constants.Companion.Is_FAVOURITE
 import com.basemibrahim.movieslist.utils.Constants.Companion.MOVIE_ID
 import com.basemibrahim.movieslist.utils.Constants.Companion.POPULARITY
 import com.basemibrahim.movieslist.utils.Constants.Companion.RELEASE_DATE
@@ -41,6 +39,7 @@ class DetailsFragment : Fragment() {
     private lateinit var votesAverage: String
     private lateinit var popularity: String
     private var movieId = 0
+    private var isFavourite = false
 
     private var loading = true
     private var totalPages = 0
@@ -58,7 +57,8 @@ class DetailsFragment : Fragment() {
             votesAverage = it.getString(VOTES_AVERAGE).toString()
             releaseDate = it.getString(RELEASE_DATE).toString()
             popularity = it.getString(POPULARITY).toString()
-             if(it.getInt(MOVIE_ID) > 0) movieId = it.getInt(MOVIE_ID)
+            if (it.getInt(MOVIE_ID) > 0) movieId = it.getInt(MOVIE_ID)
+            isFavourite = it.getBoolean(Is_FAVOURITE)
         }
     }
 
@@ -80,15 +80,32 @@ class DetailsFragment : Fragment() {
                 error(R.drawable.ic_outline_broken_image_24)
             }
         }
-        _binding.name.text = resources.getString(R.string.name) + " : " +title
-        _binding.description.text = resources.getString(R.string.description) + " : " +description
-        _binding.releaseDate.text = resources.getString(R.string.releaseDate) + " : " +releaseDate
-        _binding.popularity.text = resources.getString(R.string.popularity) + " : " +popularity
-        _binding.votesAverage.text = resources.getString(R.string.votesAverage) + " : " +votesAverage
-        fetchResponse(movieId,page)
+        _binding.name.text = resources.getString(R.string.name) + " : " + title
+        _binding.description.text = resources.getString(R.string.description) + " : " + description
+        _binding.releaseDate.text = resources.getString(R.string.releaseDate) + " : " + releaseDate
+        _binding.popularity.text = resources.getString(R.string.popularity) + " : " + popularity
+        _binding.votesAverage.text =
+            resources.getString(R.string.votesAverage) + " : " + votesAverage
+        fetchResponse(movieId, page)
         loadMore()
-    }
+        if (isFavourite) {
+            _binding.favBtn.setBackgroundResource(R.drawable.ic_baseline_favorite_24)
+        } else {
+            _binding.favBtn.setBackgroundResource(R.drawable.ic_baseline_favorite_border_24)
 
+        }
+
+        _binding.favBtn.setOnClickListener {
+            if (isFavourite) {
+                it.setBackgroundResource(R.drawable.ic_baseline_favorite_border_24)
+                isFavourite = false
+            } else {
+                it.setBackgroundResource(R.drawable.ic_baseline_favorite_24)
+                isFavourite = true
+            }
+
+        }
+    }
     private fun fetchResponse(movieId: Int, page: Int) {
         if (Utils.isNetworkAvailable(requireContext())) {
             mainViewModel.getReviews(movieId, page)
@@ -114,7 +131,7 @@ class DetailsFragment : Fragment() {
                         totalPages = it.total_pages
                         loading = false;
                         //  mainViewModel.saveResponseToDb(response.data)
-                        if(it.results.isEmpty())_binding.noReviews.visibility = View.VISIBLE
+                        if (it.results.isEmpty()) _binding.noReviews.visibility = View.VISIBLE
                         else _binding.noReviews.visibility = View.GONE
                         list.clear()
                         showReviews(it)
@@ -161,13 +178,12 @@ class DetailsFragment : Fragment() {
                 if (!loading && (visibleItemCount + firstVisible) >= totalItemCount && page < totalPages && dy > 0) {
                     loading = true
                     page += 1
-                    fetchResponse(page,movieId)
+                    fetchResponse(page, movieId)
                 }
             }
         })
 
     }
-
 
 
 }
