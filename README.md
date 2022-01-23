@@ -5,6 +5,8 @@ Architecture components
 Navigation components  
 Data Binding  
 Retrofit  
+Coroutines  
+Flow  
 Room  
 Hilt  
 Coil  
