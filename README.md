@@ -1,5 +1,5 @@
 # MoviesList
-displaying a list of movies using the movie database api 
+displaying a list of movies using the movie database api  
 Tech stack :  
 Architecture components  
 Navigation components  
